@@ -40,6 +40,7 @@ public class CompanyController {
 	@Autowired
 	private MessageSource messageSource;
 
+
 	@GetMapping("/companies")
 	public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
 		List<Company> companyList = companyService.getAllCompanies();
@@ -52,6 +53,13 @@ public class CompanyController {
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 		return ResponseEntity.status(HttpStatus.OK).location(location).body(companyDTOList);
+	}
+
+	@GetMapping("companies/{id}")
+	public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable long id){
+		Company company = companyService.getCompanyById(id);
+		CompanyDTO dto = companyMapper.getCompanyDTO(company);
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 
 	@PostMapping("/companies")
