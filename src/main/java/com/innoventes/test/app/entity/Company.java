@@ -39,6 +39,10 @@ public class Company extends BaseEntity {
 	@Column(name = "strength")
 	private Integer strength;
 	
-	@Column(name = "website_url")
+	@Column(name = "websiteURL")
 	private String webSiteURL;
+	@Column(name = "company_code", unique = true)
+	private String companyCode;
+
+
 }

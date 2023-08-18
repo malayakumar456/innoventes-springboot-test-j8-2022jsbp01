@@ -23,8 +23,10 @@ public class CompanyDTO {
 	@Email(message = "Please enter a valid email.")
 	private String email;
 
-	@PositiveOrZero(message = "Value should be a positive number or zero")
+	@PositiveOrZero(message = "Strength should be a positive number or zero")
 	private Integer strength;
 	
 	private String webSiteURL;
+	@Pattern(regexp = "[A-Za-z]{2}[0-9]{2}[ENen]", message = "Please a valid companyCode.")
+	private String companyCode;
 }

@@ -60,4 +60,11 @@ public class CompanyServiceImpl implements CompanyService {
 				() -> new ResourceNotFoundException(String.format(serviceHelper.getLocalizedMessage(ApplicationErrorCodes.COMPANY_NOT_FOUND), id),
 						ApplicationErrorCodes.COMPANY_NOT_FOUND));
 	}
+
+	@Override
+	public Company getCompanyByCompanyCode(String companyCode) {
+		return companyRepository.getCompanyByCompanyCode(companyCode).orElseThrow(
+				() -> new ResourceNotFoundException(String.format(serviceHelper.getLocalizedMessage(ApplicationErrorCodes.COMPANY_NOT_FOUND), companyCode),
+						ApplicationErrorCodes.COMPANY_NOT_FOUND));
+	}
 }

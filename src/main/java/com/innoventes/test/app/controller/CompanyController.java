@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,30 +42,13 @@ public class CompanyController {
 	private MessageSource messageSource;
 
 
-	@GetMapping("/companies")
-	public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
-		List<Company> companyList = companyService.getAllCompanies();
-		
-		List<CompanyDTO> companyDTOList = new ArrayList<CompanyDTO>();
-		
-		for (Company entity : companyList) {
-			companyDTOList.add(companyMapper.getCompanyDTO(entity));
-		}
-
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
-		return ResponseEntity.status(HttpStatus.OK).location(location).body(companyDTOList);
-	}
-
-	@GetMapping("companies/{id}")
-	public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable long id){
-		Company company = companyService.getCompanyById(id);
-		CompanyDTO dto = companyMapper.getCompanyDTO(company);
-		return new ResponseEntity<>(dto, HttpStatus.OK);
-	}
-
+	//http:localhost:8100/api/v1/companies
 	@PostMapping("/companies")
-	public ResponseEntity<CompanyDTO> addCompany(@Valid @RequestBody CompanyDTO companyDTO)
+	public ResponseEntity<Object> addCompany(@Valid @RequestBody CompanyDTO companyDTO, BindingResult result)
 			throws ValidationException {
+		if(result.hasErrors()){
+			return new ResponseEntity<>(result.getFieldError().getDefaultMessage(), HttpStatus.BAD_REQUEST);
+		}
 		Company company = companyMapper.getCompany(companyDTO);
 		Company newCompany = companyService.addCompany(company);
 		CompanyDTO newCompanyDTO = companyMapper.getCompanyDTO(newCompany);
@@ -73,6 +57,47 @@ public class CompanyController {
 				.toUri();
 		return ResponseEntity.created(location).body(newCompanyDTO);
 	}
+
+	//http:localhost:8100/api/v1/companies/
+	@GetMapping("/companies/{id}")
+	public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable long id){
+		Company company = companyService.getCompanyById(id);
+		CompanyDTO dto = companyMapper.getCompanyDTO(company);
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
+
+	//http:localhost:8100/api/v1/companies/byCode/
+	@GetMapping("/companies/byCode/{companyCode}")
+	public ResponseEntity<CompanyDTO> getCompanyByCompanyCode(@PathVariable String companyCode){
+		Company company = companyService.getCompanyByCompanyCode(companyCode);
+		CompanyDTO dto = companyMapper.getCompanyDTO(company);
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
+
+
+
+
+
+
+
+
+
+
+	@GetMapping("/companies")
+	public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
+		List<Company> companyList = companyService.getAllCompanies();
+
+		List<CompanyDTO> companyDTOList = new ArrayList<CompanyDTO>();
+
+		for (Company entity : companyList) {
+			companyDTOList.add(companyMapper.getCompanyDTO(entity));
+		}
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+		return ResponseEntity.status(HttpStatus.OK).location(location).body(companyDTOList);
+	}
+
+
 
 	@PutMapping(value = "/companies/{id}")
 	public ResponseEntity<CompanyDTO> updateCompany(@PathVariable(value = "id") Long id,
